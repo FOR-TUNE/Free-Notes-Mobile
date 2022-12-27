@@ -1,7 +1,7 @@
 // ignore_for_file: file_names
 import 'package:flutter/animation.dart';
 
-final String tableName = 'myTableNotes';
+const String tableName = 'myTableNotes';
 
 class NoteFields {
   static final List<String> values = [
@@ -9,12 +9,12 @@ class NoteFields {
     columnId, title, contentId, categoryId, categoryColorId, time
   ];
 
-  static final columnId = "_id";
-  static final title = 'titleId';
-  static final contentId = 'contentId';
-  static final categoryId = 'categoryId';
-  static final categoryColorId = 'categoryColorId';
-  static final time = 'time';
+  static const columnId = "_id";
+  static const title = 'titleId';
+  static const contentId = 'contentId';
+  static const categoryId = 'categoryId';
+  static const categoryColorId = 'categoryColorId';
+  static const time = 'time';
 }
 
 class Note {

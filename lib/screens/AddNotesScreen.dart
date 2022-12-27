@@ -159,6 +159,7 @@ class _AddNotesScreenState extends State<AddNotesScreen> {
       },
       onSaved: (newValue) {
         newValue['Color'] = myCategory['Color'];
+        newValue['Category'] = myCategory['Category'];
       },
     );
   }

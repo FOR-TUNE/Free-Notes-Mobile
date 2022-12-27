@@ -19,13 +19,13 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late List<Note> notes;
+  List<Note>? notes;
   bool isLoading = false;
 
   @override
   void initState() {
-    refreshNotes();
     super.initState();
+    refreshNotes();
   }
 
   @override
@@ -97,39 +97,45 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       backgroundColor: primaryBgColor,
-      body: notes.isNotEmpty
-          ? buildNotes()
-          : Center(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: getPropWidth(25)),
-                child: SizedBox(
-                  width: getPropWidth(300),
-                  height: getPropHeight(180),
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.of(context).pushNamed(AddNotesScreen.routeName);
-                    },
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SvgPicture.asset(
-                          'assets/icons/class-notes-icon.svg',
-                          color: notesIconColor,
-                          width: getPropWidth(80),
-                          height: getPropHeight(80),
+      body: Center(
+        child: isLoading
+            ? const CircularProgressIndicator()
+            : notes!.isEmpty
+                ? Center(
+                    child: Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: getPropWidth(25)),
+                      child: SizedBox(
+                        width: getPropWidth(300),
+                        height: getPropHeight(180),
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.of(context)
+                                .pushNamed(AddNotesScreen.routeName);
+                          },
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              SvgPicture.asset(
+                                'assets/icons/class-notes-icon.svg',
+                                color: notesIconColor,
+                                width: getPropWidth(80),
+                                height: getPropHeight(80),
+                              ),
+                              SizedBox(height: getPropHeight(5)),
+                              Text(
+                                'Create New Note...',
+                                style: titleHeaderStyle,
+                              )
+                            ],
+                          ),
                         ),
-                        SizedBox(height: getPropHeight(5)),
-                        Text(
-                          'Create New Note...',
-                          style: titleHeaderStyle,
-                        )
-                      ],
+                      ),
                     ),
-                  ),
-                ),
-              ),
-            ),
+                  )
+                : buildNotes(),
+      ),
       floatingActionButton: RoundedIcnBtn(
         press: () {
           Navigator.of(context).pushNamed(AddNotesScreen.routeName);
@@ -142,21 +148,26 @@ class _HomeScreenState extends State<HomeScreen> {
     return ListView.builder(
         scrollDirection: Axis.vertical,
         physics: const ScrollPhysics(),
-        itemCount: notes.length,
+        itemCount: notes!.length,
         itemBuilder: (context, index) {
-          final note = notes[index];
+          final note = notes![index];
           return Dismissible(
-            key: Key(notes[index].toString()),
+            key: Key(notes![index].toString()),
             onDismissed: (direction) async {
-              await DatabaseHelp.instance.delete(notes[index].id!);
+              await DatabaseHelp.instance.deleteNotes(notes![index].id!);
               setState(() {
                 refreshNotes();
               });
             },
-            child: GestureDetector(
+            child: InkWell(
+              // onTap: () async {
+              //   await Navigator.of(context).push(MaterialPageRoute(
+              //       builder: (context) => EditNotesScreen(noteId: note.id!)));
+              //   refreshNotes();
+              // },
               onTap: () async {
-                await Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => EditNotesScreen(noteId: note.id!)));
+                await Navigator.of(context)
+                    .pushNamed(EditNotesScreen.routeName);
                 refreshNotes();
               },
               child: NotesCard(
@@ -240,7 +251,7 @@ class NotesCard extends StatelessWidget {
             minLeadingWidth: 1.0,
             title: Text(currentTitle!.toUpperCase(),
                 style: notesCardTitleTextStyle),
-            subtitle: Text("${currentContent!.substring(0, 15)}...",
+            subtitle: Text("${currentContent!.substring(0, 5)}...",
                 style: notesCardContentTextStyle),
             trailing: SizedBox(
               height: getPropHeight(75),
