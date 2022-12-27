@@ -81,7 +81,7 @@ class DatabaseHelp {
 
   Future<List<Note>> readAllNotes() async {
     Database db = await instance.database;
-    final orderby = '${NoteFields.time} ASC';
+    const orderby = '${NoteFields.time} ASC';
     final result = await db.query(tableName, orderBy: orderby);
 
     return result.map((json) => Note.fromJson(json)).toList();

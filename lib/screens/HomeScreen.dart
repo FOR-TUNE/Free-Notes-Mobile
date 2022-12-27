@@ -1,5 +1,6 @@
 // ignore_for_file: file_names
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:free_notes_mobile/DatabaseHelper.dart';
 import 'package:free_notes_mobile/screens/AddNotesScreen.dart';
@@ -28,11 +29,11 @@ class _HomeScreenState extends State<HomeScreen> {
     refreshNotes();
   }
 
-  @override
-  void dispose() {
-    DatabaseHelp.instance.close();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   DatabaseHelp.instance.close();
+  //   super.dispose();
+  // }
 
   Future refreshNotes() async {
     setState(() {
@@ -53,93 +54,128 @@ class _HomeScreenState extends State<HomeScreen> {
     SizeConfig().init(context);
     final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
     print(notes);
-    return Scaffold(
-      key: scaffoldKey,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: primaryBgColor,
-        automaticallyImplyLeading: false,
-        scrolledUnderElevation: 2.0,
-        title: Text('Free-Notez', style: titleHeaderStyle),
-        centerTitle: false,
-        actions: [
-          IconButton(
-            onPressed: () async {
-              await refreshNotes();
-            },
-            icon: Icon(
-              Icons.refresh,
-              size: getPropWidth(20),
-              color: notesIconColor,
-            ),
-          ),
-          InkWell(
-            onTap: () {},
-            child: Row(
-              children: [
-                SvgPicture.asset(
-                  'assets/icons/notes-icon.svg',
-                  height: getPropHeight(30),
-                  width: getPropWidth(20),
-                  color: notesIconColor,
+    return WillPopScope(
+      onWillPop: () async {
+        final shouldPop = await showDialog<bool>(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              backgroundColor: lightBgColor,
+              title: const Text('Exit'),
+              content: Text(
+                'Are you sure you want to exit the app?',
+                style: notesCardContentTextStyle,
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    onWillPop(context, true);
+                  },
+                  child: const Text('Yes'),
                 ),
-                SizedBox(
-                  height: getPropHeight(2),
+                TextButton(
+                  onPressed: () {
+                    onWillPop(context, false);
+                  },
+                  child: const Text(
+                    'No',
+                    style: TextStyle(color: Colors.red),
+                  ),
                 ),
-                Icon(
-                  Icons.more_vert,
-                  size: getPropWidth(20),
-                  color: notesIconColor,
-                )
               ],
+            );
+          },
+        );
+        return shouldPop!;
+      },
+      child: Scaffold(
+        key: scaffoldKey,
+        appBar: AppBar(
+          elevation: 0,
+          backgroundColor: primaryBgColor,
+          automaticallyImplyLeading: false,
+          scrolledUnderElevation: 2.0,
+          title: Text('Free-Notez', style: titleHeaderStyle),
+          centerTitle: false,
+          actions: [
+            IconButton(
+              onPressed: () async {
+                await refreshNotes();
+              },
+              icon: Icon(
+                Icons.refresh,
+                size: getPropWidth(20),
+                color: notesIconColor,
+              ),
             ),
-          ),
-        ],
-      ),
-      backgroundColor: primaryBgColor,
-      body: Center(
-        child: isLoading
-            ? const CircularProgressIndicator()
-            : notes!.isEmpty
-                ? Center(
-                    child: Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: getPropWidth(25)),
-                      child: SizedBox(
-                        width: getPropWidth(300),
-                        height: getPropHeight(180),
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.of(context)
-                                .pushNamed(AddNotesScreen.routeName);
-                          },
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              SvgPicture.asset(
-                                'assets/icons/class-notes-icon.svg',
-                                color: notesIconColor,
-                                width: getPropWidth(80),
-                                height: getPropHeight(80),
-                              ),
-                              SizedBox(height: getPropHeight(5)),
-                              Text(
-                                'Create New Note...',
-                                style: titleHeaderStyle,
-                              )
-                            ],
+            InkWell(
+              onTap: () {},
+              child: Row(
+                children: [
+                  SvgPicture.asset(
+                    'assets/icons/notes-icon.svg',
+                    height: getPropHeight(30),
+                    width: getPropWidth(20),
+                    color: notesIconColor,
+                  ),
+                  SizedBox(
+                    height: getPropHeight(2),
+                  ),
+                  Icon(
+                    Icons.more_vert,
+                    size: getPropWidth(20),
+                    color: notesIconColor,
+                  )
+                ],
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: primaryBgColor,
+        body: Center(
+          child: isLoading
+              ? const CircularProgressIndicator()
+              : notes!.isEmpty
+                  ? Center(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: getPropWidth(25)),
+                        child: SizedBox(
+                          width: getPropWidth(300),
+                          height: getPropHeight(180),
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.of(context)
+                                  .pushNamed(AddNotesScreen.routeName);
+                            },
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                SvgPicture.asset(
+                                  'assets/icons/class-notes-icon.svg',
+                                  color: notesIconColor,
+                                  width: getPropWidth(80),
+                                  height: getPropHeight(80),
+                                ),
+                                SizedBox(height: getPropHeight(5)),
+                                Text(
+                                  'Create New Note...',
+                                  style: titleHeaderStyle,
+                                )
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  )
-                : buildNotes(),
-      ),
-      floatingActionButton: RoundedIcnBtn(
-        press: () {
-          Navigator.of(context).pushNamed(AddNotesScreen.routeName);
-        },
+                    )
+                  : buildNotes(),
+        ),
+        floatingActionButton: RoundedIcnBtn(
+          press: () {
+            Navigator.of(context).pushNamed(AddNotesScreen.routeName);
+          },
+        ),
       ),
     );
   }
@@ -181,6 +217,11 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         });
   }
+}
+
+onWillPop(context, bool toggle) async {
+  SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+  return toggle;
 }
 
 class RoundedIcnBtn extends StatelessWidget {
