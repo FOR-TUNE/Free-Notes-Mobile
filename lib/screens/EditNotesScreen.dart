@@ -1,42 +1,40 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, use_build_context_synchronously
 import 'package:flutter/material.dart';
 import 'package:free_notes_mobile/DatabaseHelper.dart';
 import 'package:free_notes_mobile/model/Notes.dart';
+import 'package:free_notes_mobile/screens/HomeScreen.dart';
 import '../constants/Colors.dart';
 import '../constants/Shared.dart';
 import '../constants/SizeConfigurations.dart';
 import '../constants/styles.dart';
 
 class EditNotesScreen extends StatefulWidget {
-  final Note? note;
-  const EditNotesScreen({super.key, required this.noteId, this.note});
-  static String routeName = "/EditNewNoteScreen";
   final int noteId;
+  const EditNotesScreen({super.key, required this.noteId});
+  static String routeName = "/EditNewNoteScreen";
 
   @override
   State<EditNotesScreen> createState() => _EditNotesScreenState();
 }
 
 class _EditNotesScreenState extends State<EditNotesScreen> {
-  TextEditingController title = TextEditingController();
-  TextEditingController content = TextEditingController();
-  Color currentCategoryColor = Color(noCatColor.value);
-  String currentCategoryName = '';
+  late TextEditingController title;
+  late TextEditingController content;
+  late Map myCategory = {};
   final _formkey = GlobalKey<FormState>();
   final List category = [
-    {'Color': workColor.value, 'Category': 'Work Notes'},
-    {'Color': studyColor.value, 'Category': 'Study Notes'},
-    {'Color': personalColor.value, 'Category': 'Personal Affairs'},
-    {'Color': noCatColor.value, 'Category': 'Uncategorized'}
+    {'Color': workColor, 'Category': 'Work Notes'},
+    {'Color': studyColor, 'Category': 'Study Notes'},
+    {'Color': personalColor, 'Category': 'Personal Affairs'},
+    {'Color': noCatColor, 'Category': 'Uncategorized'}
   ];
 
-  late Note note;
+  Note? notes;
   bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
-
     refreshNotes();
   }
 
@@ -45,7 +43,7 @@ class _EditNotesScreenState extends State<EditNotesScreen> {
       isLoading = true;
     });
 
-    note = await DatabaseHelp.instance.readNote(widget.noteId);
+    notes = await DatabaseHelp.instance.readNote(widget.noteId);
 
     setState(() {
       isLoading = false;
@@ -55,6 +53,25 @@ class _EditNotesScreenState extends State<EditNotesScreen> {
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
+    if (notes != null) {
+      setState(() {
+        title = TextEditingController(text: notes!.title);
+      });
+    }
+
+    if (notes != null) {
+      setState(() {
+        content = TextEditingController(text: notes!.contentId);
+      });
+    }
+    // if (notes != null) {
+    //   setState(() {
+    //     myCategory = {
+    //       'Color': notes!.categoryColorId,
+    //       'Category': notes!.categoryId
+    //     };
+    //   });
+    // }
     return Scaffold(
       backgroundColor: lightBgColor,
       appBar: AppBar(
@@ -63,14 +80,14 @@ class _EditNotesScreenState extends State<EditNotesScreen> {
         automaticallyImplyLeading: true,
         iconTheme: const IconThemeData(color: regTextColor),
         scrolledUnderElevation: 2.0,
-        title: Text('Add Notes', style: titleHeaderStyle),
+        title: Text('Edit Notes', style: titleHeaderStyle),
         centerTitle: false,
         actionsIconTheme: const IconThemeData(color: regTextColor),
         actions: [
           IconButton(
             onPressed: () async {
-              await DatabaseHelp.instance.delete(note.id!);
-              Navigator.pop(context);
+              await DatabaseHelp.instance.deleteNotes(notes!.id!);
+              Navigator.pushNamed(context, HomeScreen.routeName);
             },
             icon: const Icon(
               Icons.delete,
@@ -81,7 +98,7 @@ class _EditNotesScreenState extends State<EditNotesScreen> {
           IconButton(
             onPressed: () async {
               await updateNote();
-              Navigator.pop(context);
+              Navigator.pushNamed(context, HomeScreen.routeName);
             },
             icon: const Icon(
               Icons.check,
@@ -92,52 +109,62 @@ class _EditNotesScreenState extends State<EditNotesScreen> {
           const SizedBox(width: 10)
         ],
       ),
-      body: SafeArea(
-        child: SizedBox(
-          width: double.infinity,
-          height: double.infinity,
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: getPropWidth(15)),
-            child: SingleChildScrollView(
-                child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  height: getPropHeight(1),
+      body: Center(
+        child: isLoading
+            ? const CircularProgressIndicator()
+            : SafeArea(
+                child: SizedBox(
+                  width: double.infinity,
+                  height: double.infinity,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: getPropWidth(15)),
+                    child: SingleChildScrollView(
+                        child: Form(
+                      key: _formkey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height: getPropHeight(1),
+                          ),
+                          buildTitleField(),
+                          buildCategoryField(),
+                          buildContentField(),
+                        ],
+                      ),
+                    )),
+                  ),
                 ),
-                buildTitleField(),
-                // Divider(
-                //   color: primaryBgColor,
-                //   thickness: getPropHeight(1.5),
-                // ),
-                buildCategoryField(),
-                buildContentField(),
-              ],
-            )),
-          ),
-        ),
+              ),
       ),
     );
   }
 
   TextFormField buildTitleField() {
     return TextFormField(
-      initialValue: note.title,
       style: noteTitleStyle,
       cursorColor: regTextColor,
       decoration: notesTitleFieldDecoration("Title"),
       controller: title,
+      onSaved: (value) {
+        setState(() {
+          title.text = value!;
+        });
+      },
     );
   }
 
   TextFormField buildContentField() {
     return TextFormField(
-        initialValue: note.contentId,
         style: noteTitleStyle,
         cursorColor: regTextColor,
         controller: content,
         maxLines: null,
-        // expands: true,
+        onSaved: (value) {
+          setState(() {
+            content.text = value!;
+          });
+        },
         decoration: notesContentFieldDecoration('Type Notes'));
   }
 
@@ -167,7 +194,7 @@ class _EditNotesScreenState extends State<EditNotesScreen> {
                     width: 10,
                     clipBehavior: Clip.hardEdge,
                     decoration: BoxDecoration(
-                      color: Color(note.categoryColorId.value),
+                      color: item['Color'],
                       shape: BoxShape.circle,
                     ),
                   ),
@@ -177,7 +204,7 @@ class _EditNotesScreenState extends State<EditNotesScreen> {
                 width: getPropWidth(5),
               ),
               Text(
-                note.categoryId,
+                item['Category'],
                 style: hintTextStyle,
               )
             ],
@@ -186,31 +213,26 @@ class _EditNotesScreenState extends State<EditNotesScreen> {
       }).toList(),
       onChanged: (value) {
         // ignore: avoid_print
-        print(value);
-        setState(() {
-          value['Color'] = currentCategoryColor;
-          value['Category'] = currentCategoryName;
-        });
+        print(value['Color']);
+        setState(() => myCategory = value);
       },
       onSaved: (newValue) {
-        setState(() {
-          newValue['Color'] = currentCategoryColor;
-          newValue['Category'] = currentCategoryName;
-        });
+        newValue['Color'] = myCategory['Color'];
+        newValue['Category'] = myCategory['Category'];
       },
     );
   }
 
   Future updateNote() async {
     _formkey.currentState?.save();
-    final note = widget.note!.copy(
+    final note = notes!.copy(
       title: title.text,
       contentId: content.text,
-      categoryId: currentCategoryName,
-      categoryColorId: currentCategoryColor,
+      categoryId: myCategory['Category'],
+      categoryColorId: myCategory['Color'],
       // createdTime: DateTime.now(),
     );
 
-    await DatabaseHelp.instance.update(note.toJson());
+    await DatabaseHelp.instance.updateNotes(note);
   }
 }

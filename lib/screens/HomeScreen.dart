@@ -47,7 +47,24 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  Future sortbyCat() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    notes = await DatabaseHelp.instance.sortByCategory();
+
+    setState(() {
+      isLoading = false;
+    });
+  }
+
   DateFormat dateFormat = DateFormat("yyyy-MM-dd");
+  final List<String> dropdownitem = [
+    'Delete all Threads',
+    'Sort by Category',
+    'Sort by Date'
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -69,13 +86,13 @@ class _HomeScreenState extends State<HomeScreen> {
               actions: [
                 TextButton(
                   onPressed: () {
-                    onWillPop(context, true);
+                    onWillPop(context, false);
                   },
                   child: const Text('Yes'),
                 ),
                 TextButton(
                   onPressed: () {
-                    onWillPop(context, false);
+                    Navigator.of(context).pop(false);
                   },
                   child: const Text(
                     'No',
@@ -108,8 +125,51 @@ class _HomeScreenState extends State<HomeScreen> {
                 color: notesIconColor,
               ),
             ),
-            InkWell(
-              onTap: () {},
+            PopupMenuButton(
+              position: PopupMenuPosition.under,
+              color: lightBgColor,
+              itemBuilder: (context) {
+                return [
+                  PopupMenuItem(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: getPropWidth(5),
+                          vertical: getPropHeight(3)),
+                      value: dropdownitem[0],
+                      child: Text(
+                        dropdownitem[0],
+                        style: noteTitleStyle,
+                      )),
+                  PopupMenuItem(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: getPropWidth(5),
+                          vertical: getPropHeight(3)),
+                      value: dropdownitem[1],
+                      child: Text(
+                        dropdownitem[1],
+                        style: noteTitleStyle,
+                      )),
+                  PopupMenuItem(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: getPropWidth(5),
+                          vertical: getPropHeight(3)),
+                      value: dropdownitem[2],
+                      child: Text(
+                        dropdownitem[2],
+                        style: noteTitleStyle,
+                      )),
+                ];
+              },
+              onSelected: (value) {
+                if (value == dropdownitem[0]) {
+                  deleteAllNotes();
+                }
+                if (value == dropdownitem[1]) {
+                  sortbyCat();
+                }
+                if (value == dropdownitem[2]) {
+                  refreshNotes();
+                }
+              },
               child: Row(
                 children: [
                   SvgPicture.asset(
@@ -138,8 +198,8 @@ class _HomeScreenState extends State<HomeScreen> {
               : notes!.isEmpty
                   ? Center(
                       child: Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: getPropWidth(25)),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: getPropWidth(25)),
                         child: SizedBox(
                           width: getPropWidth(300),
                           height: getPropHeight(180),
@@ -180,6 +240,19 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  pushToEdit(id) async {
+    await Navigator.of(context).push(
+        MaterialPageRoute(builder: (context) => EditNotesScreen(noteId: id)));
+  }
+
+  deleteAllNotes() async {
+    await DatabaseHelp.instance.deleteAllNotes();
+
+    setState(() {
+      refreshNotes();
+    });
+  }
+
   Widget buildNotes() {
     return ListView.builder(
         scrollDirection: Axis.vertical,
@@ -195,15 +268,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 refreshNotes();
               });
             },
-            child: InkWell(
-              // onTap: () async {
-              //   await Navigator.of(context).push(MaterialPageRoute(
-              //       builder: (context) => EditNotesScreen(noteId: note.id!)));
-              //   refreshNotes();
-              // },
+            child: GestureDetector(
               onTap: () async {
-                await Navigator.of(context)
-                    .pushNamed(EditNotesScreen.routeName);
+                await pushToEdit(note.id!);
                 refreshNotes();
               },
               child: NotesCard(
@@ -270,40 +337,37 @@ class NotesCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {},
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-            horizontal: getPropWidth(8), vertical: getPropHeight(7)),
-        child: Container(
-          decoration: BoxDecoration(
-              color: primaryBgColor,
-              borderRadius: const BorderRadius.all(Radius.circular(12)),
-              border: Border.all(
-                  style: BorderStyle.solid,
-                  color: lightBgColor.withOpacity(0.3),
-                  strokeAlign: StrokeAlign.inside)),
-          child: ListTile(
-            contentPadding: EdgeInsets.symmetric(
-                horizontal: getPropWidth(8), vertical: getPropHeight(0.2)),
-            tileColor: primaryBgColor,
-            isThreeLine: false,
-            leading: CatColor(color: categoryColor!),
-            minLeadingWidth: 1.0,
-            title: Text(currentTitle!.toUpperCase(),
-                style: notesCardTitleTextStyle),
-            subtitle: Text("${currentContent!.substring(0, 5)}...",
-                style: notesCardContentTextStyle),
-            trailing: SizedBox(
-              height: getPropHeight(75),
-              child: Column(
-                children: [
-                  Text(
-                    '$time'.toUpperCase(),
-                    style: notesTimeTextStyle,
-                  ),
-                ],
-              ),
+    return Padding(
+      padding: EdgeInsets.symmetric(
+          horizontal: getPropWidth(8), vertical: getPropHeight(7)),
+      child: Container(
+        decoration: BoxDecoration(
+            color: primaryBgColor,
+            borderRadius: const BorderRadius.all(Radius.circular(12)),
+            border: Border.all(
+                style: BorderStyle.solid,
+                color: lightBgColor.withOpacity(0.3),
+                strokeAlign: StrokeAlign.inside)),
+        child: ListTile(
+          contentPadding: EdgeInsets.symmetric(
+              horizontal: getPropWidth(8), vertical: getPropHeight(0.2)),
+          tileColor: primaryBgColor,
+          isThreeLine: false,
+          leading: CatColor(color: categoryColor!),
+          minLeadingWidth: 1.0,
+          title:
+              Text(currentTitle!.toUpperCase(), style: notesCardTitleTextStyle),
+          subtitle: Text("${currentContent!.substring(0, 5)}...",
+              style: notesCardContentTextStyle),
+          trailing: SizedBox(
+            height: getPropHeight(75),
+            child: Column(
+              children: [
+                Text(
+                  '$time'.toUpperCase(),
+                  style: notesTimeTextStyle,
+                ),
+              ],
             ),
           ),
         ),

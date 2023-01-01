@@ -87,6 +87,14 @@ class DatabaseHelp {
     return result.map((json) => Note.fromJson(json)).toList();
   }
 
+  Future<List<Note>> sortByCategory() async {
+    Database db = await instance.database;
+    const orderby = '${NoteFields.categoryId} ASC';
+    final result = await db.query(tableName, orderBy: orderby);
+
+    return result.map((json) => Note.fromJson(json)).toList();
+  }
+
   Future<int> updateNotes(Note note) async {
     Database db = await instance.database;
     return db.update(
@@ -104,6 +112,11 @@ class DatabaseHelp {
       where: '${NoteFields.columnId} = ?',
       whereArgs: [id],
     );
+  }
+
+  Future deleteAllNotes() async {
+    Database db = await instance.database;
+    return await db.rawDelete("delete from $tableName");
   }
 
   Future close() async {
