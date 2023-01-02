@@ -1,4 +1,4 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, use_build_context_synchronously
 import 'package:flutter/material.dart';
 import 'package:free_notes_mobile/DatabaseHelper.dart';
 import 'package:free_notes_mobile/screens/HomeScreen.dart';
@@ -74,15 +74,23 @@ class _AddNotesScreenState extends State<AddNotesScreen> {
                   height: getPropHeight(1),
                 ),
                 buildTitleField(),
-                // Divider(
-                //   color: primaryBgColor,
-                //   thickness: getPropHeight(1.5),
-                // ),
-                buildCategoryField(),
+                Divider(
+                  color: primaryBgColor,
+                  thickness: getPropHeight(1),
+                ),
+                // buildCategoryField(),
                 buildContentField(),
               ],
             )),
           ),
+        ),
+      ),
+      bottomNavigationBar: Container(
+        width: double.infinity,
+        color: primaryBgColor.withOpacity(0.5),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: getPropWidth(17)),
+          child: buildCategoryField(),
         ),
       ),
     );
@@ -110,10 +118,10 @@ class _AddNotesScreenState extends State<AddNotesScreen> {
   DropdownButtonFormField buildCategoryField() {
     return DropdownButtonFormField(
       key: _formkey,
-      dropdownColor: lightBgColor,
-      hint: Text('Select Category', style: hintTextStyle),
+      dropdownColor: primaryBgColor.withOpacity(0.5),
+      hint: Text('Select Category', style: regTextStyle),
       decoration: categoryFieldDecoration(),
-      style: noteTitleStyle,
+      style: categoryTextStyle,
       items: category.map((item) {
         return DropdownMenuItem(
           value: item,
@@ -146,7 +154,7 @@ class _AddNotesScreenState extends State<AddNotesScreen> {
               ),
               Text(
                 item['Category'],
-                style: hintTextStyle,
+                style: categoryTextStyle,
               )
             ],
           ),

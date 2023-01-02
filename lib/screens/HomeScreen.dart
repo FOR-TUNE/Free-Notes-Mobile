@@ -29,12 +29,6 @@ class _HomeScreenState extends State<HomeScreen> {
     refreshNotes();
   }
 
-  // @override
-  // void dispose() {
-  //   DatabaseHelp.instance.close();
-  //   super.dispose();
-  // }
-
   Future refreshNotes() async {
     setState(() {
       isLoading = true;
@@ -70,7 +64,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-    print(notes);
     return WillPopScope(
       onWillPop: () async {
         final shouldPop = await showDialog<bool>(
@@ -109,10 +102,10 @@ class _HomeScreenState extends State<HomeScreen> {
         key: scaffoldKey,
         appBar: AppBar(
           elevation: 0,
-          backgroundColor: primaryBgColor,
+          backgroundColor: primaryBgColor.withOpacity(0.75),
           automaticallyImplyLeading: false,
           scrolledUnderElevation: 2.0,
-          title: Text('Free-Notez', style: titleHeaderStyle),
+          title: Text('Free-Notez', style: titleHeaderStyle2),
           centerTitle: false,
           actions: [
             IconButton(
@@ -122,36 +115,28 @@ class _HomeScreenState extends State<HomeScreen> {
               icon: Icon(
                 Icons.refresh,
                 size: getPropWidth(20),
-                color: notesIconColor,
+                color: regTextColor,
               ),
             ),
             PopupMenuButton(
               position: PopupMenuPosition.under,
+              padding: EdgeInsets.symmetric(horizontal: getPropWidth(10)),
               color: lightBgColor,
               itemBuilder: (context) {
                 return [
                   PopupMenuItem(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: getPropWidth(5),
-                          vertical: getPropHeight(3)),
                       value: dropdownitem[0],
                       child: Text(
                         dropdownitem[0],
                         style: noteTitleStyle,
                       )),
                   PopupMenuItem(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: getPropWidth(5),
-                          vertical: getPropHeight(3)),
                       value: dropdownitem[1],
                       child: Text(
                         dropdownitem[1],
                         style: noteTitleStyle,
                       )),
                   PopupMenuItem(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: getPropWidth(5),
-                          vertical: getPropHeight(3)),
                       value: dropdownitem[2],
                       child: Text(
                         dropdownitem[2],
@@ -176,7 +161,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     'assets/icons/notes-icon.svg',
                     height: getPropHeight(30),
                     width: getPropWidth(20),
-                    color: notesIconColor,
+                    color: regTextColor,
                   ),
                   SizedBox(
                     height: getPropHeight(2),
@@ -184,14 +169,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   Icon(
                     Icons.more_vert,
                     size: getPropWidth(20),
-                    color: notesIconColor,
+                    color: regTextColor,
                   )
                 ],
               ),
             ),
           ],
         ),
-        backgroundColor: primaryBgColor,
+        backgroundColor: lightBgColor,
         body: Center(
           child: isLoading
               ? const CircularProgressIndicator()
@@ -279,6 +264,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 time: dateFormat.format(note.createdTime),
                 categoryColor: note.categoryColorId,
                 currentId: note.id,
+                currentCategory: note.categoryId,
               ),
             ),
           );
@@ -327,10 +313,11 @@ class NotesCard extends StatelessWidget {
     this.categoryColor,
     this.time,
     this.currentId,
+    this.currentCategory,
   }) : super(key: key);
 
   final String? currentTitle;
-  final String? currentContent;
+  final String? currentContent, currentCategory;
   final Color? categoryColor;
   final String? time;
   final int? currentId;
@@ -342,7 +329,7 @@ class NotesCard extends StatelessWidget {
           horizontal: getPropWidth(8), vertical: getPropHeight(7)),
       child: Container(
         decoration: BoxDecoration(
-            color: primaryBgColor,
+            color: primaryBgColor.withOpacity(0.7),
             borderRadius: const BorderRadius.all(Radius.circular(12)),
             border: Border.all(
                 style: BorderStyle.solid,
@@ -351,9 +338,9 @@ class NotesCard extends StatelessWidget {
         child: ListTile(
           contentPadding: EdgeInsets.symmetric(
               horizontal: getPropWidth(8), vertical: getPropHeight(0.2)),
-          tileColor: primaryBgColor,
+          tileColor: lightBgColor,
           isThreeLine: false,
-          leading: CatColor(color: categoryColor!),
+          // leading: CatColor(color: categoryColor!),
           minLeadingWidth: 1.0,
           title:
               Text(currentTitle!.toUpperCase(), style: notesCardTitleTextStyle),
@@ -362,11 +349,21 @@ class NotesCard extends StatelessWidget {
           trailing: SizedBox(
             height: getPropHeight(75),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   '$time'.toUpperCase(),
                   style: notesTimeTextStyle,
                 ),
+                Text(
+                  '$currentCategory',
+                  style: TextStyle(
+                      fontSize: getPropWidth(10.0),
+                      color: categoryColor,
+                      fontWeight: FontWeight.w400,
+                      letterSpacing: 1,
+                      fontFamily: 'Lato'),
+                )
               ],
             ),
           ),

@@ -128,7 +128,11 @@ class _EditNotesScreenState extends State<EditNotesScreen> {
                             height: getPropHeight(1),
                           ),
                           buildTitleField(),
-                          buildCategoryField(),
+                          // buildCategoryField(),
+                          Divider(
+                            color: primaryBgColor,
+                            thickness: getPropHeight(1),
+                          ),
                           buildContentField(),
                         ],
                       ),
@@ -136,6 +140,14 @@ class _EditNotesScreenState extends State<EditNotesScreen> {
                   ),
                 ),
               ),
+      ),
+      bottomNavigationBar: Container(
+        width: double.infinity,
+        color: primaryBgColor.withOpacity(0.5),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: getPropWidth(17)),
+          child: buildCategoryField(),
+        ),
       ),
     );
   }
@@ -170,9 +182,13 @@ class _EditNotesScreenState extends State<EditNotesScreen> {
 
   DropdownButtonFormField buildCategoryField() {
     return DropdownButtonFormField(
-      dropdownColor: lightBgColor,
+      dropdownColor: primaryBgColor.withOpacity(0.5),
       decoration: categoryFieldDecoration(),
-      style: noteTitleStyle,
+      hint: Text(
+        'Change Category',
+        style: regTextStyle,
+      ),
+      style: categoryTextStyle,
       items: category.map((item) {
         return DropdownMenuItem(
           value: item,
@@ -205,7 +221,7 @@ class _EditNotesScreenState extends State<EditNotesScreen> {
               ),
               Text(
                 item['Category'],
-                style: hintTextStyle,
+                style: categoryTextStyle,
               )
             ],
           ),
