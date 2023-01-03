@@ -101,6 +101,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Scaffold(
         key: scaffoldKey,
         appBar: AppBar(
+          shadowColor: regTextColor.withOpacity(0.2),
           elevation: 0,
           backgroundColor: primaryBgColor.withOpacity(0.75),
           automaticallyImplyLeading: false,
@@ -176,7 +177,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
-        backgroundColor: lightBgColor,
+        backgroundColor: primaryBgColor.withOpacity(0.75),
         body: Center(
           child: isLoading
               ? const CircularProgressIndicator()
@@ -329,7 +330,7 @@ class NotesCard extends StatelessWidget {
           horizontal: getPropWidth(8), vertical: getPropHeight(7)),
       child: Container(
         decoration: BoxDecoration(
-            color: primaryBgColor.withOpacity(0.7),
+            color: lightBgColor.withOpacity(0.6),
             borderRadius: const BorderRadius.all(Radius.circular(12)),
             border: Border.all(
                 style: BorderStyle.solid,
@@ -338,9 +339,8 @@ class NotesCard extends StatelessWidget {
         child: ListTile(
           contentPadding: EdgeInsets.symmetric(
               horizontal: getPropWidth(8), vertical: getPropHeight(0.2)),
-          tileColor: lightBgColor,
+          tileColor: primaryBgColor.withOpacity(0.75),
           isThreeLine: false,
-          // leading: CatColor(color: categoryColor!),
           minLeadingWidth: 1.0,
           title:
               Text(currentTitle!.toUpperCase(), style: notesCardTitleTextStyle),

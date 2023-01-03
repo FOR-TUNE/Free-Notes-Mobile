@@ -124,11 +124,12 @@ class _EditNotesScreenState extends State<EditNotesScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(
-                            height: getPropHeight(1),
+                          buildCategoryField(),
+                          Divider(
+                            color: primaryBgColor,
+                            thickness: getPropHeight(1),
                           ),
                           buildTitleField(),
-                          // buildCategoryField(),
                           Divider(
                             color: primaryBgColor,
                             thickness: getPropHeight(1),
@@ -141,14 +142,6 @@ class _EditNotesScreenState extends State<EditNotesScreen> {
                 ),
               ),
       ),
-      bottomNavigationBar: Container(
-        width: double.infinity,
-        color: primaryBgColor.withOpacity(0.5),
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: getPropWidth(17)),
-          child: buildCategoryField(),
-        ),
-      ),
     );
   }
 
@@ -156,7 +149,7 @@ class _EditNotesScreenState extends State<EditNotesScreen> {
     return TextFormField(
       style: noteTitleStyle,
       cursorColor: regTextColor,
-      decoration: notesTitleFieldDecoration("Title"),
+      decoration: notesTitleFieldDecoration("Edit your Title"),
       controller: title,
       onSaved: (value) {
         setState(() {
@@ -177,11 +170,13 @@ class _EditNotesScreenState extends State<EditNotesScreen> {
             content.text = value!;
           });
         },
-        decoration: notesContentFieldDecoration('Type Notes'));
+        decoration: notesContentFieldDecoration('Type in your Notes'));
   }
 
   DropdownButtonFormField buildCategoryField() {
     return DropdownButtonFormField(
+      elevation: 15,
+      focusColor: primaryBgColor.withOpacity(0.5),
       dropdownColor: primaryBgColor.withOpacity(0.5),
       decoration: categoryFieldDecoration(),
       hint: Text(

@@ -42,7 +42,7 @@ class _AddNotesScreenState extends State<AddNotesScreen> {
         automaticallyImplyLeading: true,
         iconTheme: const IconThemeData(color: regTextColor),
         scrolledUnderElevation: 2.0,
-        title: Text('Add Notes', style: titleHeaderStyle),
+        title: Text('Add New Notes', style: titleHeaderStyle),
         centerTitle: false,
         actionsIconTheme: const IconThemeData(color: regTextColor),
         actions: [
@@ -70,27 +70,20 @@ class _AddNotesScreenState extends State<AddNotesScreen> {
                 child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(
-                  height: getPropHeight(1),
+                buildCategoryField(),
+                Divider(
+                  color: primaryBgColor,
+                  thickness: getPropHeight(1),
                 ),
                 buildTitleField(),
                 Divider(
                   color: primaryBgColor,
                   thickness: getPropHeight(1),
                 ),
-                // buildCategoryField(),
                 buildContentField(),
               ],
             )),
           ),
-        ),
-      ),
-      bottomNavigationBar: Container(
-        width: double.infinity,
-        color: primaryBgColor.withOpacity(0.5),
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: getPropWidth(17)),
-          child: buildCategoryField(),
         ),
       ),
     );
@@ -117,6 +110,8 @@ class _AddNotesScreenState extends State<AddNotesScreen> {
 
   DropdownButtonFormField buildCategoryField() {
     return DropdownButtonFormField(
+      focusColor: primaryBgColor.withOpacity(0.5),
+      elevation: 15,
       key: _formkey,
       dropdownColor: primaryBgColor.withOpacity(0.5),
       hint: Text('Select Category', style: regTextStyle),

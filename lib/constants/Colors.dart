@@ -10,4 +10,4 @@ const regTextColor = Colors.black;
 const workColor = Colors.red;
 const studyColor = Colors.blue;
 const personalColor = Colors.yellow;
-const noCatColor = Colors.green;
+const noCatColor = Color(0xFF004D40);
