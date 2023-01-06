@@ -103,10 +103,10 @@ class _HomeScreenState extends State<HomeScreen> {
         appBar: AppBar(
           shadowColor: regTextColor.withOpacity(0.2),
           elevation: 0,
-          backgroundColor: primaryBgColor.withOpacity(0.75),
+          backgroundColor: primaryBgColor,
           automaticallyImplyLeading: false,
           scrolledUnderElevation: 2.0,
-          title: Text('Free-Notez', style: titleHeaderStyle2),
+          title: Text('Free-Notez', style: titleHeaderStyle),
           centerTitle: false,
           actions: [
             IconButton(
@@ -116,7 +116,7 @@ class _HomeScreenState extends State<HomeScreen> {
               icon: Icon(
                 Icons.refresh,
                 size: getPropWidth(20),
-                color: regTextColor,
+                color: notesIconColor,
               ),
             ),
             PopupMenuButton(
@@ -162,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     'assets/icons/notes-icon.svg',
                     height: getPropHeight(30),
                     width: getPropWidth(20),
-                    color: regTextColor,
+                    color: notesIconColor,
                   ),
                   SizedBox(
                     height: getPropHeight(2),
@@ -170,7 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Icon(
                     Icons.more_vert,
                     size: getPropWidth(20),
-                    color: regTextColor,
+                    color: notesIconColor,
                   )
                 ],
               ),
