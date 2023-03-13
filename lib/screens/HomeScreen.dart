@@ -335,7 +335,7 @@ class NotesCard extends StatelessWidget {
             border: Border.all(
                 style: BorderStyle.solid,
                 color: lightBgColor.withOpacity(0.3),
-                strokeAlign: StrokeAlign.inside)),
+                strokeAlign: BorderSide.strokeAlignInside)),
         child: ListTile(
           contentPadding: EdgeInsets.symmetric(
               horizontal: getPropWidth(8), vertical: getPropHeight(0.2)),

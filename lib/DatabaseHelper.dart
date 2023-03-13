@@ -43,7 +43,7 @@ class DatabaseHelp {
   }
 
   // Now we create the table used in the database
-  Future? _onCreate(Database db, int version) {
+  Future<dynamic>? _onCreate(Database db, int version) {
     db.execute(
         // Here we use 3 single quote to allow writing of any string in multiple lines, treating it as a single string.
         ''' 
