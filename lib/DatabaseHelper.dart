@@ -1,5 +1,6 @@
 // ignore_for_file: file_names
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:free_notes_mobile/model/Notes.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -56,12 +57,14 @@ class DatabaseHelp {
     ${NoteFields.categoryColorId} INTEGER NOT NULL
     )
     ''');
+    return null;
   }
 
   Future<Note> create(Note note) async {
     Database db = await instance.database;
     // We need to persist this note within our sqflite database,
     final id = await db.insert(tableName, note.toJson());
+    debugPrint(id.toString());
     return note.copy();
   }
 

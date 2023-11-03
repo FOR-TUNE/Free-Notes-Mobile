@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:free_notes_mobile/screens/AddNotesScreen.dart';
-import 'package:free_notes_mobile/screens/EditNotesScreen.dart';
 import 'package:free_notes_mobile/screens/HomeScreen.dart';
 import 'package:free_notes_mobile/screens/SplashScreen.dart';
 

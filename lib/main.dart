@@ -18,10 +18,13 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Free - Notes',
       theme: ThemeData(
-          appBarTheme: const AppBarTheme(
-              actionsIconTheme: IconThemeData(color: notesIconColor)),
-          fontFamily: 'Lato',
-          backgroundColor: secondaryBgColor),
+        appBarTheme: const AppBarTheme(
+            actionsIconTheme: IconThemeData(color: notesIconColor)),
+        fontFamily: 'Lato',
+        colorScheme: ColorScheme.fromSwatch(
+          backgroundColor: secondaryBgColor,
+        ),
+      ),
       initialRoute: SplashScreen.routeName,
       routes: routes,
       // home: const Wrapper(),
